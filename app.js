@@ -12,12 +12,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 const router = express.Router();
-app.use(process.env.URL_PREFIX, router);
+// app.use(process.env.URL_PREFIX, router);
 app.get("/", (req, res) => {
   res.json({ app: "Msgraph Service" });
 });
 
-router.get("/me", async (req, res) => {
+app.get("/me", async (req, res) => {
   try {
     const response = await fetch('https://graph.microsoft.com/v1.0/me', {
       headers: {
