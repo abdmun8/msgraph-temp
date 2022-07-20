@@ -2,7 +2,7 @@ var createError = require("http-errors");
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 var app = express();
 app.disable("x-powered-by");
@@ -19,21 +19,64 @@ app.get("/", (req, res) => {
 
 app.get("/me", async (req, res) => {
   try {
-    const response = await fetch('https://graph.microsoft.com/v1.0/me', {
+    const response = await fetch("https://graph.microsoft.com/v1.0/me", {
       headers: {
-        Authorization: req.headers['authorization']
-      }
-    })
+        Authorization: req.headers["authorization"],
+      },
+    });
     const data = await response.json();
-    if(Object.keys(data).includes('error')){
+    if (!response.ok || Object.keys(data).includes("error")) {
       return res.status(401).json(data);
     }
-    res.json(data)
+    res.json(data);
   } catch (e) {
-    res.status(401).json({error: true})
+    res.status(401).json({ error: true });
   }
-  
-})
+});
+
+app.get("/_api/SP.UserProfiles.PeopleManager/:rest", async (req, res) => {
+  const URL =
+    "https://tmtgroup.sharepoint.com/sites/portal_trakindo_dev" + req.url;
+  try {
+    const headers = {
+      Authorization: req.headers["authorization"],
+      Accept: "application/json;odata=verbose",
+      ["Content-Type"]: "application/json;odata=verbose",
+    };
+    const response = await fetch(URL, {
+      headers,
+    });
+    const data = await response.json();
+    if (!response.ok || Object.keys(data).includes("error")) {
+      return res.status(401).json(data);
+    }
+    res.json(data);
+  } catch (e) {
+    res.status(401).json({ error: true });
+  }
+});
+
+app.get("/_api/Web/SiteUsers", async (req, res) => {
+  const URL =
+    "https://tmtgroup.sharepoint.com/sites/portal_trakindo_dev" + req.url;
+  try {
+    const headers = {
+      Authorization: req.headers["authorization"],
+      Accept: "application/json;odata=verbose",
+      ["Content-Type"]: "application/json;odata=verbose",
+    };
+    const response = await fetch(URL, {
+      headers,
+    });
+    const data = await response.json();
+    if (!response.ok || Object.keys(data).includes("error")) {
+      return res.status(401).json(data);
+    }
+    res.json(data);
+  } catch (e) {
+    res.status(401).json({ error: true });
+  }
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
